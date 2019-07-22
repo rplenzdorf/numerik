@@ -207,7 +207,7 @@ for t = 0:dt:4
 end
 %% Video
 
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.avi','Uncompressed avi');
+video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.mp4','MPEG-4');
 open(video)
 writeVideo(video,F)
 close(video)
