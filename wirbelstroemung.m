@@ -6,7 +6,7 @@ tic
 %% Input
 sv = 4;
 
-Nx = 160;
+Nx = 200;
 
 CFL = .8;
 DFL = .1;
@@ -112,15 +112,15 @@ for t = 0:dt:4
             v(k) = 0;
         end
         
-%         if R(k) == 1
-%             w(k) = Dxc(k,:)*v-Dyc(k,:)*u;
-%         end
+        if R(k) == 1
+            w(k) = Dxc(k,:)*v-Dyc(k,:)*u;
+        end
     end
     
-    wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
-    w = w + wkorr;
-    w(Nx*Ny-Nx+1) = 0;
-    w(Nx*Ny) = 0;
+%     wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
+%     w = w + wkorr;
+%     w(Nx*Ny-Nx+1) = 0;
+%     w(Nx*Ny) = 0;
     %% Penalty
     obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
     
@@ -176,7 +176,11 @@ for t = 0:dt:4
     colormap jet
     shading interp
     
-    imagesc(x_,y_,C')
+%     imagesc(x_,y_,C')
+%     hold on
+    s = pcolor(x_,y_,W')
+    s.FaceColor = 'interp'
+    s.EdgeColor = 'none'
     hold on
     rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
     hold on
@@ -203,7 +207,7 @@ for t = 0:dt:4
 end
 %% Video
 
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_c.avi','Uncompressed avi');
+video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.avi','Uncompressed avi');
 open(video)
 writeVideo(video,F)
 close(video)
