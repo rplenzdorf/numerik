@@ -4,6 +4,7 @@ clc
 close all
 tic
 % wie gut funktioniert github eigentlich?
+% ziemlich gut
 %% Input
 sv = 4;
 
