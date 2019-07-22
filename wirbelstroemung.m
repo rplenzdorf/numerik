@@ -3,8 +3,6 @@ clear
 clc
 close all
 tic
-% wie gut funktioniert github eigentlich?
-% ziemlich gut, auch mit widows shell?
 %% Input
 sv = 4;
 
