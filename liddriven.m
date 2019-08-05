@@ -1,19 +1,16 @@
-function wirbelstroemung(sv,Nx,Re)
+function liddriven(sv,Nx,Re)
 %%
 clear
 clc
 close all
 tic
 %% Input
-sv = 4;
-
-Nx = 200;
-
 CFL = .8;
 DFL = .1;
 
-Re = 1000;
-
+global Nx;
+global sv;
+global Re;
 %% Initialisierung
 
 Ny = Nx/sv;
@@ -46,7 +43,7 @@ R = N ~= -1;
 Lap_p = diag(R==0)*Lap +diag(R);
 
 %% Dirichlet
-D = -R.*y;
+D = 0;
 
 %% Neumann Korrekturmatrix
 korrx = zeros(Nx*Ny);
@@ -84,7 +81,6 @@ for i = 1:Nx*Ny
 end
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
-w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
 
 w = -w/10;
 w = ~R.*w;
@@ -101,7 +97,7 @@ for t = 0:dt:4
             v(k) = -Dxc(k,:)*Psi;
         elseif N(k) == 2
             u(k) = 0;
-            v(k) = 0;
+            v(k) = 1;
         elseif N(k) == 6
             u(k) = 0;
             v(k) = 0;
@@ -132,7 +128,7 @@ for t = 0:dt:4
     o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
     obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
     
-    obj = obj1;
+    obj = 0*obj1;
     
     c = 1/dt;
     
@@ -179,7 +175,7 @@ for t = 0:dt:4
     
 %     imagesc(x_,y_,C')
 %     hold on
-    s = pcolor(x_,y_,W')
+    s = pcolor(x_,y_,C')
     s.FaceColor = 'interp'
     s.EdgeColor = 'none'
     hold on
