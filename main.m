@@ -17,7 +17,7 @@ while pruef == true
         disp("obj")
         pruef = false;
     elseif a == 2
-        Re = input("bei welcher Reynoldszahl sol die Strömung simuliert werden?")
+        Re = input("bei welcher Reynoldszahl sol die Strömung simuliert werden? \n")
         liddriven(sv,Nx,Re)
         pruef = false;
     elseif a == 9

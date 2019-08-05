@@ -43,7 +43,7 @@ R = N ~= -1;
 Lap_p = diag(R==0)*Lap +diag(R);
 
 %% Dirichlet
-D = 0;
+D = 0.*y;
 
 %% Neumann Korrekturmatrix
 korrx = zeros(Nx*Ny);
@@ -86,7 +86,7 @@ w = -w/10;
 w = ~R.*w;
 
 %% Zeitschleife
-for t = 0:dt:4
+for t = 0:dt:10
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -97,10 +97,10 @@ for t = 0:dt:4
             v(k) = -Dxc(k,:)*Psi;
         elseif N(k) == 2
             u(k) = 0;
-            v(k) = 1;
+            v(k) = 0;
         elseif N(k) == 6
             u(k) = 0;
-            v(k) = 0;
+            v(k) = 1;
         elseif N(k) == 0
             u(k) = Dyc(k,:)*Psi;
             v(k) = 0;
@@ -179,8 +179,8 @@ for t = 0:dt:4
     s.FaceColor = 'interp'
     s.EdgeColor = 'none'
     hold on
-    rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
-    hold on
+%     rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
+%     hold on
 %     quiver(x,y,u,v,'w')
 %     hold on
 %     quiver(.5,.5,Fx/Fn/2,Fy/Fn/2)
