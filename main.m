@@ -28,7 +28,7 @@ while pruef == true
         rohrstroemung(sv,Nx,Re)
         pruef = false;
     elseif a == 4
-        bewegung(sv,Nx,Re) %machen!
+        bewegung(sv,Nx,Re)
         pruef = false;
     elseif a == 9
         pruef = false;
