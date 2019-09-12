@@ -34,7 +34,7 @@ dia = @(in) spdiags(in,0,Nx*Ny,Nx*Ny);
     
 tv = 1; %Videoframes
 
-dt = .01; %Zeitschritt später angepasst
+dt = .01; %Zeitschritt, später angepasst
 u = zeros(Nx*Ny,1);
 v = u;
 %% Normvektor, Randvektor
@@ -82,6 +82,7 @@ for i = 1:Nx*Ny
         wr(i,:) = 0;
     end
 end
+
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
 w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
@@ -106,7 +107,8 @@ objw = input("welches Objekt soll umströmt werden?\n \n 1) Kreis\n 2) Rechteck\n
             pruef2 = true;
         end
     end
-%%Plotwahl
+
+%% Plotwahl
 pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Wirbelstaerke\n")
 %% Zeitschleife
 for t = 0:dt:4
@@ -213,8 +215,8 @@ for t = 0:dt:4
     hold off
 end
 %% Video
-
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.mp4','MPEG-4');
+vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)
 close(video)

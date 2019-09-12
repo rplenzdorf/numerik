@@ -170,8 +170,8 @@ for t = 0:dt:10
     hold off
 end
 %% Video
-
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.mp4','MPEG-4');
+vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)
 close(video)
