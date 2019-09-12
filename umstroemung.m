@@ -1,19 +1,18 @@
-function wirbelstroemung(sv,Nx,Re)
+function umstroemung(sv,Nx,Re,obj)
 %%
 clear
 clc
 close all
 tic
+pruef2 = true;
 %% Input
-sv = 4;
-
-Nx = 200;
-
 CFL = .8;
 DFL = .1;
 
-Re = 1000;
-
+global Nx;
+global sv;
+global Re;
+global obj;
 %% Initialisierung
 
 Ny = Nx/sv;
@@ -32,9 +31,9 @@ nu = 1/Re;
 
 dia = @(in) spdiags(in,0,Nx*Ny,Nx*Ny);
     
-tv = 1; 
+tv = 1; %Videoframes
 
-dt = .01;
+dt = .01; %Zeitschritt später angepasst
 u = zeros(Nx*Ny,1);
 v = u;
 %% Normvektor, Randvektor
@@ -89,6 +88,23 @@ w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
 w = -w/10;
 w = ~R.*w;
 
+%% Objektwahl
+b = input("welches Objekt soll umströmt werden?\n \n 1) Kreis\n 2) Rechteck\n 3) eigenes Objekt\n")
+    while pruef2 == true
+        if b == 1
+            obj = (x-.5).^2+((y -.5)).^2<.2^2;
+            pruef2 = false;
+        elseif b == 2
+            obj = (x-.5).^10+((y -.5)).^10<.2^10;
+            pruef2 = false;
+        elseif b == 3
+            obj = input("eigenes Objekt:\n")
+            pruef2 = false;
+        else
+            disp("Antwort ungültig")
+            pruef2 = true;
+        end
+    end
 %% Zeitschleife
 for t = 0:dt:4
     w = ~R.*w;
@@ -123,16 +139,14 @@ for t = 0:dt:4
 %     w(Nx*Ny-Nx+1) = 0;
 %     w(Nx*Ny) = 0;
     %% Penalty
-    obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
+%     obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
     
-    rx = .5;
-    ry = .5;
-    phi = 5*t;
-    o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
-    o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
-    obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
-    
-    obj = obj1;
+%     rx = .5;
+%     ry = .5;
+%     phi = 5*t;
+%     o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
+%     o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
+%     obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
     
     c = 1/dt;
     
