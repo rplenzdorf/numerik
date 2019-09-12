@@ -1,10 +1,11 @@
-function umstroemung(sv,Nx,Re,obj)
+function umstroemung(sv,Nx,Re)
 %%
 clear
 clc
 close all
 tic
 pruef2 = true;
+pruef3 = true;
 %% Input
 CFL = .8;
 DFL = .1;
@@ -89,15 +90,15 @@ w = -w/10;
 w = ~R.*w;
 
 %% Objektwahl
-b = input("welches Objekt soll umströmt werden?\n \n 1) Kreis\n 2) Rechteck\n 3) eigenes Objekt\n")
+objw = input("welches Objekt soll umströmt werden?\n \n 1) Kreis\n 2) Rechteck\n 3) eigenes Objekt\n")
     while pruef2 == true
-        if b == 1
+        if objw == 1
             obj = (x-.5).^2+((y -.5)).^2<.2^2;
             pruef2 = false;
-        elseif b == 2
+        elseif objw == 2
             obj = (x-.5).^10+((y -.5)).^10<.2^10;
             pruef2 = false;
-        elseif b == 3
+        elseif objw == 3
             obj = input("eigenes Objekt:\n")
             pruef2 = false;
         else
@@ -105,8 +106,11 @@ b = input("welches Objekt soll umströmt werden?\n \n 1) Kreis\n 2) Rechteck\n 3)
             pruef2 = true;
         end
     end
+%%Plotwahl
+pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Wirbelstaerke\n")
 %% Zeitschleife
 for t = 0:dt:4
+    pruef3 = true;
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -134,20 +138,7 @@ for t = 0:dt:4
         end
     end
     
-%     wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
-%     w = w + wkorr;
-%     w(Nx*Ny-Nx+1) = 0;
-%     w(Nx*Ny) = 0;
-    %% Penalty
-%     obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
-    
-%     rx = .5;
-%     ry = .5;
-%     phi = 5*t;
-%     o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
-%     o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
-%     obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
-    
+    %% Penalty  
     c = 1/dt;
     
     fx = obj.*(0-u)*c;
@@ -169,11 +160,6 @@ for t = 0:dt:4
     w = w + dt*wabl;
 %     w = ~R.*w;
     
-    %% Kraft
-    Fx = norm(fx);
-    Fy = norm(fy);
-    Fn = sqrt(Fx.^2+Fy.^2);
-    
     %% Reshape
     X = reshape(x,Nx,Ny);
     Y = reshape(y,Nx,Ny);
@@ -191,17 +177,23 @@ for t = 0:dt:4
     colormap jet
     shading interp
     
-%     imagesc(x_,y_,C')
-%     hold on
-    s = pcolor(x_,y_,W')
-    s.FaceColor = 'interp'
-    s.EdgeColor = 'none'
-    hold on
+    while pruef3 == true
+        if pltw == 1
+            imagesc(x_,y_,C')
+            hold on
+            pruef3 = false;
+        elseif pltw == 2
+            imagesc(x_,y_,W')
+            hold on
+            pruef3 = false;
+        else
+            disp("Antwort ungültig")
+            pruef3 = true;
+        end
+    end
     rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
     hold on
 %     quiver(x,y,u,v,'w')
-%     hold on
-%     quiver(.5,.5,Fx/Fn/2,Fy/Fn/2)
 %     hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
