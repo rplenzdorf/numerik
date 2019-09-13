@@ -103,7 +103,7 @@ for t = 0:dt:10
         elseif N(k) == 0
             u(k) = Dyc(k,:)*Psi;
             v(k) = 0;
-            T(k) = 1000;
+            T(k) = 1;
         elseif N(k) == 4
             u(k) = Dyc(k,:)*Psi;
             v(k) = 0;
@@ -121,7 +121,11 @@ for t = 0:dt:10
     
     Tabl = -Uw*(a.*u.*T) -Uo*(~a.*u.*T) -Vw*(b.*v.*T) -Vo*(~b.*v.*T) - 1.*Dxx*T;
     T = T + dt*Tabl;
-    Pt = -10*Dyc*T;
+    wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
+    T = T + wkorr;
+    T(Nx*Ny-Nx+1) = 0;
+    T(Nx*Ny) = 0;
+    Pt = -10*Dxc*T;
     
     %% Downwind
     a = u > 0;
@@ -155,11 +159,11 @@ for t = 0:dt:10
     colormap jet
     shading interp
     
-    imagesc(x_,y_,T)
+    imagesc(x_,y_,Tr')
     hold on
     
-%     %interpolation
-%     s = pcolor(x_,y_,C')
+% %     interpolation
+%     s = pcolor(x_,y_,Tr')
 %     s.FaceColor = 'interp'
 %     s.EdgeColor = 'none'
 %     hold on
