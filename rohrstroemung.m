@@ -3,6 +3,7 @@ function rohrstroemung(sv,Nx,Re)
 clear
 clc
 close all
+pruef3 = true
 tic
 %% Input
 CFL = .8;
@@ -87,6 +88,8 @@ w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
 w = -w/10;
 w = ~R.*w;
 
+%% Plotwahl
+pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert")
 %% Zeitschleife
 for t = 0:dt:1
     w = ~R.*w;
@@ -145,10 +148,34 @@ for t = 0:dt:1
     %% Plot  
     colormap jet
     shading interp
-    s = pcolor(x_,y_,C')
-    s.FaceColor = 'interp'
-    s.EdgeColor = 'none'
-    hold on
+    
+    while pruef3 == true
+        if pltw == 1
+            imagesc(x_,y_,C')
+            hold on
+            pruef3 = false;
+        elseif pltw == 3
+            s = pcolor(x_,y_,C')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        elseif pltw == 3
+            imagesc(x_,y_,W')
+            hold on
+            pruef3 = false;
+        elseif pltw == 4
+            s = pcolor(x_,y_,W')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        else
+            disp("Antwort ungültig")
+            pruef3 = true;
+        end
+    end
+    
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
     set(gca,'YDir','normal')

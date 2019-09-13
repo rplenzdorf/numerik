@@ -109,7 +109,7 @@ objw = input("welches Objekt soll umströmt werden?\n \n 1) Kreis\n 2) Rechteck\n
     end
 
 %% Plotwahl
-pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Wirbelstaerke\n")
+pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert")
 %% Zeitschleife
 for t = 0:dt:4
     pruef3 = true;

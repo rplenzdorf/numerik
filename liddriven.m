@@ -4,6 +4,7 @@ clear
 clc
 close all
 tic
+pruef3 = true;
 %% Input
 CFL = .8;
 DFL = .1;
@@ -82,6 +83,8 @@ end
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
 
+%% Plotwahl
+pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert")
 %% Zeitschleife
 for t = 0:dt:10
     w = ~R.*w;
@@ -141,14 +144,32 @@ for t = 0:dt:10
     colormap jet
     shading interp
     
-    imagesc(x_,y_,C')
-    hold on
-    
-    %interpolation
-    s = pcolor(x_,y_,C')
-    s.FaceColor = 'interp'
-    s.EdgeColor = 'none'
-    hold on
+    while pruef3 == true
+        if pltw == 1
+            imagesc(x_,y_,C')
+            hold on
+            pruef3 = false;
+        elseif pltw == 3
+            s = pcolor(x_,y_,C')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        elseif pltw == 3
+            imagesc(x_,y_,W')
+            hold on
+            pruef3 = false;
+        elseif pltw == 4
+            s = pcolor(x_,y_,W')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        else
+            disp("Antwort ungültig")
+            pruef3 = true;
+        end
+    end
 
     quiver(x,y,u,v,'w')
     hold on
