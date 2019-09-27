@@ -1,19 +1,16 @@
-function wirbelstroemung(sv,Nx,Re)
+function temperature(sv,Nx,Re)
 %%
 clear
 clc
 close all
 tic
 %% Input
-sv = 4;
-
-Nx = 200;
-
 CFL = .8;
 DFL = .1;
 
-Re = 1000;
-
+global Nx;
+global sv;
+global Re;
 %% Initialisierung
 
 Ny = Nx/sv;
@@ -29,12 +26,13 @@ y = kron(y_,ones(Nx,1));
 nu = 1/Re;
 
 [Dyc,Dxc,Lap,w0,w2,w4,w6] = matrizen(Nx,Ny,hx,hy);
+Dxx = 1/hy^2.*((sten2mat([1 -2 1]',Nx,Ny)));
 
 dia = @(in) spdiags(in,0,Nx*Ny,Nx*Ny);
     
-tv = 1; 
+tv = 1; %Videoframes
 
-dt = .01;
+dt = .01; %Zeitschritt später angepasst
 u = zeros(Nx*Ny,1);
 v = u;
 %% Normvektor, Randvektor
@@ -46,7 +44,7 @@ R = N ~= -1;
 Lap_p = diag(R==0)*Lap +diag(R);
 
 %% Dirichlet
-D = -R.*y;
+D = 0.*y;
 
 %% Neumann Korrekturmatrix
 korrx = zeros(Nx*Ny);
@@ -84,13 +82,10 @@ for i = 1:Nx*Ny
 end
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
-w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
-
-w = -w/10;
-w = ~R.*w;
-
+%% Anfangstemperatur
+T = zeros(Nx*Ny,1);
 %% Zeitschleife
-for t = 0:dt:4
+for t = 0:dt:10
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -108,57 +103,44 @@ for t = 0:dt:4
         elseif N(k) == 0
             u(k) = Dyc(k,:)*Psi;
             v(k) = 0;
+            T(k) = 1;
         elseif N(k) == 4
             u(k) = Dyc(k,:)*Psi;
             v(k) = 0;
         end
-        
-        if R(k) == 1
-            w(k) = Dxc(k,:)*v-Dyc(k,:)*u;
-        end
     end
     
-%     wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
-%     w = w + wkorr;
-%     w(Nx*Ny-Nx+1) = 0;
-%     w(Nx*Ny) = 0;
-    %% Penalty
-    obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
+    wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
+    w = w + wkorr;
+    w(Nx*Ny-Nx+1) = 0;
+    w(Nx*Ny) = 0;
     
-    rx = .5;
-    ry = .5;
-    phi = 5*t;
-    o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
-    o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
-    obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
+    %% Temperatur
+    a = u > 0;
+    b = v > 0;
     
-    obj = obj1;
-    
-    c = 1/dt;
-    
-    fx = obj.*(0-u)*c;
-    fy = obj.*(0-v)*c;
-    
-    P = Dxc*fy-Dyc*fx;
+    Tabl = -Uw*(a.*u.*T) -Uo*(~a.*u.*T) -Vw*(b.*v.*T) -Vo*(~b.*v.*T) - 1.*Dxx*T;
+    T = T + dt*Tabl;
+    wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
+    T = T + wkorr;
+    T(Nx*Ny-Nx+1) = 0;
+    T(Nx*Ny) = 0;
+    Pt = -10*Dxc*T;
     
     %% Downwind
     a = u > 0;
     b = v > 0;
     
-    wabl = -Uw*(a.*u.*w) -Uo*(~a.*u.*w) -Vw*(b.*v.*w) -Vo*(~b.*v.*w) +nu.*Lap*w+P;
-    
+    wabl = -Uw*(a.*u.*w) -Uo*(~a.*u.*w) -Vw*(b.*v.*w) -Vo*(~b.*v.*w) +nu.*Lap*w +Pt; %RHS
+
+    %% Zeitanpassung
     dt1 = CFL*hy/max(sqrt(u.^2+v.^2));
     dt2 = DFL*hy.^2/nu;
     dt = min(dt1,dt2);
     
     %% Euler
     w = w + dt*wabl;
-%     w = ~R.*w;
     
-    %% Kraft
-    Fx = norm(fx);
-    Fy = norm(fy);
-    Fn = sqrt(Fx.^2+Fy.^2);
     
     %% Reshape
     X = reshape(x,Nx,Ny);
@@ -169,25 +151,24 @@ for t = 0:dt:4
     W = reshape(w,Nx,Ny);
     NORM = reshape(N,Nx,Ny);
     DIRI = reshape(D,Nx,Ny);
-    OBJ = reshape(obj,Nx,Ny);
     C = sqrt(U.^2+V.^2);
+    Tr = reshape(T,Nx,Ny);
                     
     
     %% Plot  
     colormap jet
     shading interp
     
-%     imagesc(x_,y_,C')
+    imagesc(x_,y_,Tr')
+    hold on
+    
+% %     interpolation
+%     s = pcolor(x_,y_,Tr')
+%     s.FaceColor = 'interp'
+%     s.EdgeColor = 'none'
 %     hold on
-    s = pcolor(x_,y_,W')
-    s.FaceColor = 'interp'
-    s.EdgeColor = 'none'
-    hold on
-    rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
-    hold on
+
 %     quiver(x,y,u,v,'w')
-%     hold on
-%     quiver(.5,.5,Fx/Fn/2,Fy/Fn/2)
 %     hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
@@ -207,8 +188,8 @@ for t = 0:dt:4
     hold off
 end
 %% Video
-
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.mp4','MPEG-4');
+vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)
 close(video)

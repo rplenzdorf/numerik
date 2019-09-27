@@ -1,19 +1,18 @@
-function wirbelstroemung(sv,Nx,Re)
+function rohrstroemung(sv,Nx,Re)
 %%
 clear
 clc
 close all
+pruef3 = true
 tic
 %% Input
-sv = 4;
-
-Nx = 200;
-
 CFL = .8;
 DFL = .1;
 
-Re = 1000;
-
+global Nx;
+global sv;
+global Re;
+global obj;
 %% Initialisierung
 
 Ny = Nx/sv;
@@ -32,9 +31,9 @@ nu = 1/Re;
 
 dia = @(in) spdiags(in,0,Nx*Ny,Nx*Ny);
     
-tv = 1; 
+tv = 1; %Videoframes
 
-dt = .01;
+dt = .01; %Zeitschritt später angepasst
 u = zeros(Nx*Ny,1);
 v = u;
 %% Normvektor, Randvektor
@@ -84,13 +83,14 @@ for i = 1:Nx*Ny
 end
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
-w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
 
 w = -w/10;
 w = ~R.*w;
 
+%% Plotwahl
+% pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert?\n")
 %% Zeitschleife
-for t = 0:dt:4
+for t = 0:dt:2
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -118,34 +118,11 @@ for t = 0:dt:4
         end
     end
     
-%     wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
-%     w = w + wkorr;
-%     w(Nx*Ny-Nx+1) = 0;
-%     w(Nx*Ny) = 0;
-    %% Penalty
-    obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
-    
-    rx = .5;
-    ry = .5;
-    phi = 5*t;
-    o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
-    o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
-    obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
-    
-    obj = obj1;
-    
-    c = 1/dt;
-    
-    fx = obj.*(0-u)*c;
-    fy = obj.*(0-v)*c;
-    
-    P = Dxc*fy-Dyc*fx;
-    
     %% Downwind
     a = u > 0;
     b = v > 0;
     
-    wabl = -Uw*(a.*u.*w) -Uo*(~a.*u.*w) -Vw*(b.*v.*w) -Vo*(~b.*v.*w) +nu.*Lap*w+P;
+    wabl = -Uw*(a.*u.*w) -Uo*(~a.*u.*w) -Vw*(b.*v.*w) -Vo*(~b.*v.*w) +nu.*Lap*w;
     
     dt1 = CFL*hy/max(sqrt(u.^2+v.^2));
     dt2 = DFL*hy.^2/nu;
@@ -154,11 +131,6 @@ for t = 0:dt:4
     %% Euler
     w = w + dt*wabl;
 %     w = ~R.*w;
-    
-    %% Kraft
-    Fx = norm(fx);
-    Fy = norm(fy);
-    Fn = sqrt(Fx.^2+Fy.^2);
     
     %% Reshape
     X = reshape(x,Nx,Ny);
@@ -169,7 +141,6 @@ for t = 0:dt:4
     W = reshape(w,Nx,Ny);
     NORM = reshape(N,Nx,Ny);
     DIRI = reshape(D,Nx,Ny);
-    OBJ = reshape(obj,Nx,Ny);
     C = sqrt(U.^2+V.^2);
                     
     
@@ -177,18 +148,38 @@ for t = 0:dt:4
     colormap jet
     shading interp
     
-%     imagesc(x_,y_,C')
-%     hold on
-    s = pcolor(x_,y_,W')
+%     while pruef3 == true
+%         if pltw == 1
+%             imagesc(x_,y_,C')
+%             hold on
+%             pruef3 = false;
+%         elseif pltw == 2
+%             s = pcolor(x_,y_,C')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = false;
+%         elseif pltw == 3
+%             imagesc(x_,y_,W')
+%             hold on
+%             pruef3 = false;
+%         elseif pltw == 4
+%             s = pcolor(x_,y_,W')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = false;
+%         else
+%             disp("Antwort ungültig")
+%             pruef3 = true;
+%         end
+%     end
+    set(gca,'colorscale','log')
+
+    s = pcolor(x_,y_,C')
     s.FaceColor = 'interp'
     s.EdgeColor = 'none'
-    hold on
-    rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
-    hold on
-%     quiver(x,y,u,v,'w')
-%     hold on
-%     quiver(.5,.5,Fx/Fn/2,Fy/Fn/2)
-%     hold on
+    
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
     set(gca,'YDir','normal')
@@ -198,7 +189,6 @@ for t = 0:dt:4
     width=1200;
     height=width/sv;
     set(gcf,'position',[x0,y0,width,height])
-%     set(gca,'colorscale','log')
     drawnow
     
     F(tv) = getframe(gcf)
@@ -207,8 +197,8 @@ for t = 0:dt:4
     hold off
 end
 %% Video
-
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.mp4','MPEG-4');
+vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)
 close(video)

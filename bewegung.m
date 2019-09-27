@@ -1,19 +1,19 @@
-function wirbelstroemung(sv,Nx,Re)
+function bewegung(sv,Nx,Re)
 %%
 clear
 clc
 close all
 tic
+pruef2 = true;
+pruef3 = true;
 %% Input
-sv = 4;
-
-Nx = 200;
-
 CFL = .8;
 DFL = .1;
 
-Re = 1000;
-
+global Nx;
+global sv;
+global Re;
+global obj;
 %% Initialisierung
 
 Ny = Nx/sv;
@@ -32,9 +32,9 @@ nu = 1/Re;
 
 dia = @(in) spdiags(in,0,Nx*Ny,Nx*Ny);
     
-tv = 1; 
+tv = 1; %Videoframes
 
-dt = .01;
+dt = .01; %Zeitschritt, später angepasst
 u = zeros(Nx*Ny,1);
 v = u;
 %% Normvektor, Randvektor
@@ -82,6 +82,7 @@ for i = 1:Nx*Ny
         wr(i,:) = 0;
     end
 end
+
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
 w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
@@ -89,8 +90,15 @@ w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
 w = -w/10;
 w = ~R.*w;
 
+%% Objektwahl
+objw = input("welches Objekt soll umströmt werden?\n \n 1) Ruehrer \n 2) Rechteck mit Translation und Rotation (in Entwicklung)\n 3) eigenes Objekt\n")
+
+%% Plotwahl
+pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert")
 %% Zeitschleife
 for t = 0:dt:4
+    pruef2 = true;
+    pruef3 = true;
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -118,22 +126,33 @@ for t = 0:dt:4
         end
     end
     
-%     wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
-%     w = w + wkorr;
-%     w(Nx*Ny-Nx+1) = 0;
-%     w(Nx*Ny) = 0;
-    %% Penalty
-    obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
-    
-    rx = .5;
-    ry = .5;
-    phi = 5*t;
-    o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
-    o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
-    obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
-    
-    obj = obj1;
-    
+    %% Penalty  
+        while pruef2 == true
+        if objw == 1
+            rx = .5;
+            ry = .5;
+            phi = 5*t;
+            o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
+            o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
+            obj = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
+            pruef2 = false;
+        elseif objw == 2
+            rx = .5;
+            ry = .5;
+            phi = 5*t;
+            o1 = (x*5*t-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
+            o2 = (y-ry)*cos(phi)-(x*5*t-rx)*sin(phi)+ry;
+            obj = (o1-rx).^10+((o2-ry)).^10<.03.^10;
+            pruef2 = false;
+        elseif objw == 3
+            obj = input("eigenes Objekt:\n")
+            pruef2 = false;
+        else
+            disp("Antwort ungültig")
+            pruef2 = true;
+        end
+    end
+
     c = 1/dt;
     
     fx = obj.*(0-u)*c;
@@ -155,11 +174,6 @@ for t = 0:dt:4
     w = w + dt*wabl;
 %     w = ~R.*w;
     
-    %% Kraft
-    Fx = norm(fx);
-    Fy = norm(fy);
-    Fn = sqrt(Fx.^2+Fy.^2);
-    
     %% Reshape
     X = reshape(x,Nx,Ny);
     Y = reshape(y,Nx,Ny);
@@ -177,17 +191,36 @@ for t = 0:dt:4
     colormap jet
     shading interp
     
-%     imagesc(x_,y_,C')
+    while pruef3 == true
+        if pltw == 1
+            imagesc(x_,y_,C')
+            hold on
+            pruef3 = false;
+        elseif pltw == 3
+            s = pcolor(x_,y_,C')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        elseif pltw == 3
+            imagesc(x_,y_,W')
+            hold on
+            pruef3 = false;
+        elseif pltw == 4
+            s = pcolor(x_,y_,W')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        else
+            disp("Antwort ungültig")
+            pruef3 = true;
+        end
+    end
+%     rec = rectangle('Position',[.5*5*t-0.2+.5 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1]);
+%     rec
 %     hold on
-    s = pcolor(x_,y_,W')
-    s.FaceColor = 'interp'
-    s.EdgeColor = 'none'
-    hold on
-    rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
-    hold on
 %     quiver(x,y,u,v,'w')
-%     hold on
-%     quiver(.5,.5,Fx/Fn/2,Fy/Fn/2)
 %     hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
@@ -207,8 +240,8 @@ for t = 0:dt:4
     hold off
 end
 %% Video
-
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.mp4','MPEG-4');
+vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)
 close(video)

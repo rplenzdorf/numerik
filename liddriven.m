@@ -4,6 +4,7 @@ clear
 clc
 close all
 tic
+pruef3 = true;
 %% Input
 CFL = .8;
 DFL = .1;
@@ -29,9 +30,9 @@ nu = 1/Re;
 
 dia = @(in) spdiags(in,0,Nx*Ny,Nx*Ny);
     
-tv = 1; 
+tv = 1; %Videoframes
 
-dt = .01;
+dt = .01; %Zeitschritt später angepasst
 u = zeros(Nx*Ny,1);
 v = u;
 %% Normvektor, Randvektor
@@ -82,11 +83,10 @@ end
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
 
-w = -w/10;
-w = ~R.*w;
-
+%% Plotwahl
+% pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert\n")
 %% Zeitschleife
-for t = 0:dt:10
+for t = 0:dt:20
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -99,8 +99,8 @@ for t = 0:dt:10
             u(k) = 0;
             v(k) = 0;
         elseif N(k) == 6
-            u(k) = 0;
-            v(k) = 1;
+            u(k) = 1;
+            v(k) = 0; 
         elseif N(k) == 0
             u(k) = Dyc(k,:)*Psi;
             v(k) = 0;
@@ -108,53 +108,25 @@ for t = 0:dt:10
             u(k) = Dyc(k,:)*Psi;
             v(k) = 0;
         end
-        
-        if R(k) == 1
-            w(k) = Dxc(k,:)*v-Dyc(k,:)*u;
-        end
     end
     
-%     wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
-%     w = w + wkorr;
-%     w(Nx*Ny-Nx+1) = 0;
-%     w(Nx*Ny) = 0;
-    %% Penalty
-    obj1 = (x-.5).^2+((y -.5)).^2<.2^2;
-    
-    rx = .5;
-    ry = .5;
-    phi = 5*t;
-    o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
-    o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
-    obj2 = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
-    
-    obj = 0*obj1;
-    
-    c = 1/dt;
-    
-    fx = obj.*(0-u)*c;
-    fy = obj.*(0-v)*c;
-    
-    P = Dxc*fy-Dyc*fx;
-    
+    wkorr = (wr * Psi - korrx*u*2./hx-korry*v*2./hy);
+    w = w + wkorr;
+    w(Nx*Ny-Nx+1) = 0;
+    w(Nx*Ny) = 0;
     %% Downwind
     a = u > 0;
     b = v > 0;
     
-    wabl = -Uw*(a.*u.*w) -Uo*(~a.*u.*w) -Vw*(b.*v.*w) -Vo*(~b.*v.*w) +nu.*Lap*w+P;
+    wabl = -Uw*(a.*u.*w) -Uo*(~a.*u.*w) -Vw*(b.*v.*w) -Vo*(~b.*v.*w) +nu.*Lap*w; %RHS
     
+    %% Zeitanpassung
     dt1 = CFL*hy/max(sqrt(u.^2+v.^2));
     dt2 = DFL*hy.^2/nu;
     dt = min(dt1,dt2);
     
     %% Euler
     w = w + dt*wabl;
-%     w = ~R.*w;
-    
-    %% Kraft
-    Fx = norm(fx);
-    Fy = norm(fy);
-    Fn = sqrt(Fx.^2+Fy.^2);
     
     %% Reshape
     X = reshape(x,Nx,Ny);
@@ -165,7 +137,6 @@ for t = 0:dt:10
     W = reshape(w,Nx,Ny);
     NORM = reshape(N,Nx,Ny);
     DIRI = reshape(D,Nx,Ny);
-    OBJ = reshape(obj,Nx,Ny);
     C = sqrt(U.^2+V.^2);
                     
     
@@ -173,18 +144,39 @@ for t = 0:dt:10
     colormap jet
     shading interp
     
-%     imagesc(x_,y_,C')
-%     hold on
+%     while pruef3 == true
+%         if pltw == 1
+%             imagesc(x_,y_,C')
+%             hold on
+%             pruef3 = true;
+%         elseif pltw == 3
+%             s = pcolor(x_,y_,C')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = true;
+%         elseif pltw == 3
+%             imagesc(x_,y_,W')
+%             hold on
+%             pruef3 = true;
+%         elseif pltw == 4
+%             s = pcolor(x_,y_,W')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = true;
+%         else
+%             disp("Antwort ungültig")
+%             pruef3 = false;
+%         end
+%     end
+
     s = pcolor(x_,y_,C')
     s.FaceColor = 'interp'
     s.EdgeColor = 'none'
     hold on
-%     rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
-%     hold on
-%     quiver(x,y,u,v,'w')
-%     hold on
-%     quiver(.5,.5,Fx/Fn/2,Fy/Fn/2)
-%     hold on
+    quiver(x,y,u,v,'w')
+    hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
     set(gca,'YDir','normal')
@@ -203,8 +195,8 @@ for t = 0:dt:10
     hold off
 end
 %% Video
-
-video = VideoWriter('E:\seife\Dokumente\Studium\Videos Numerik\kar_200-4_w_interpol.mp4','MPEG-4');
+vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)
 close(video)
