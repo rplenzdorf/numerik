@@ -217,11 +217,11 @@ for t = 0:dt:4
             pruef3 = true;
         end
     end
-    rec = rectangle('Position',[.5*5*t-0.2+.5 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1]);
-    rec
-    hold on
-    quiver(x,y,u,v,'w')
-    hold on
+%     rec = rectangle('Position',[.5*5*t-0.2+.5 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1]);
+%     rec
+%     hold on
+%     quiver(x,y,u,v,'w')
+%     hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
     set(gca,'YDir','normal')

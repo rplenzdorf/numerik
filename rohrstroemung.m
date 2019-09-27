@@ -83,15 +83,14 @@ for i = 1:Nx*Ny
 end
 %% Anfangswirbel
 w = zeros(Nx*Ny,1);
-w = 1./((x-0.5).^2+(y-0.5).^2+0.001);
 
 w = -w/10;
 w = ~R.*w;
 
 %% Plotwahl
-pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert")
+% pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert?\n")
 %% Zeitschleife
-for t = 0:dt:1
+for t = 0:dt:2
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -149,32 +148,37 @@ for t = 0:dt:1
     colormap jet
     shading interp
     
-    while pruef3 == true
-        if pltw == 1
-            imagesc(x_,y_,C')
-            hold on
-            pruef3 = false;
-        elseif pltw == 3
-            s = pcolor(x_,y_,C')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = false;
-        elseif pltw == 3
-            imagesc(x_,y_,W')
-            hold on
-            pruef3 = false;
-        elseif pltw == 4
-            s = pcolor(x_,y_,W')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = false;
-        else
-            disp("Antwort ungültig")
-            pruef3 = true;
-        end
-    end
+%     while pruef3 == true
+%         if pltw == 1
+%             imagesc(x_,y_,C')
+%             hold on
+%             pruef3 = false;
+%         elseif pltw == 2
+%             s = pcolor(x_,y_,C')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = false;
+%         elseif pltw == 3
+%             imagesc(x_,y_,W')
+%             hold on
+%             pruef3 = false;
+%         elseif pltw == 4
+%             s = pcolor(x_,y_,W')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = false;
+%         else
+%             disp("Antwort ungültig")
+%             pruef3 = true;
+%         end
+%     end
+    set(gca,'colorscale','log')
+
+    s = pcolor(x_,y_,C')
+    s.FaceColor = 'interp'
+    s.EdgeColor = 'none'
     
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
@@ -185,7 +189,6 @@ for t = 0:dt:1
     width=1200;
     height=width/sv;
     set(gcf,'position',[x0,y0,width,height])
-%     set(gca,'colorscale','log')
     drawnow
     
     F(tv) = getframe(gcf)

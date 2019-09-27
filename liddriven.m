@@ -84,9 +84,9 @@ end
 w = zeros(Nx*Ny,1);
 
 %% Plotwahl
-pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert")
+% pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert\n")
 %% Zeitschleife
-for t = 0:dt:10
+for t = 0:dt:20
     w = ~R.*w;
     
     Psi = linsolve(Lap_p,((R==0).*(-w)) + R.*D);
@@ -144,33 +144,37 @@ for t = 0:dt:10
     colormap jet
     shading interp
     
-    while pruef3 == true
-        if pltw == 1
-            imagesc(x_,y_,C')
-            hold on
-            pruef3 = false;
-        elseif pltw == 3
-            s = pcolor(x_,y_,C')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = false;
-        elseif pltw == 3
-            imagesc(x_,y_,W')
-            hold on
-            pruef3 = false;
-        elseif pltw == 4
-            s = pcolor(x_,y_,W')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = false;
-        else
-            disp("Antwort ungültig")
-            pruef3 = true;
-        end
-    end
+%     while pruef3 == true
+%         if pltw == 1
+%             imagesc(x_,y_,C')
+%             hold on
+%             pruef3 = true;
+%         elseif pltw == 3
+%             s = pcolor(x_,y_,C')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = true;
+%         elseif pltw == 3
+%             imagesc(x_,y_,W')
+%             hold on
+%             pruef3 = true;
+%         elseif pltw == 4
+%             s = pcolor(x_,y_,W')
+%             s.FaceColor = 'interp'
+%             s.EdgeColor = 'none'
+%             hold on
+%             pruef3 = true;
+%         else
+%             disp("Antwort ungültig")
+%             pruef3 = false;
+%         end
+%     end
 
+    s = pcolor(x_,y_,C')
+    s.FaceColor = 'interp'
+    s.EdgeColor = 'none'
+    hold on
     quiver(x,y,u,v,'w')
     hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])

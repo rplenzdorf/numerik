@@ -182,7 +182,7 @@ for t = 0:dt:4
             imagesc(x_,y_,C')
             hold on
             pruef3 = false;
-        elseif pltw == 3
+        elseif pltw == 2
             s = pcolor(x_,y_,C')
             s.FaceColor = 'interp'
             s.EdgeColor = 'none'
