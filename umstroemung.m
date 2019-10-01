@@ -203,8 +203,13 @@ for t = 0:dt:4
             pruef3 = true;
         end
     end
-    rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
-    hold on
+    if objw == 1
+        rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1])
+        hold on
+    elseif objw == 2
+        rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[0 0])
+        hold on
+    end
 %     quiver(x,y,u,v,'w')
 %     hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])
@@ -225,7 +230,7 @@ for t = 0:dt:4
     hold off
 end
 %% Video
-vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+vidname = input("Unter welchem Namen soll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
 video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)

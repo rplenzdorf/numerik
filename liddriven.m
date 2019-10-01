@@ -84,7 +84,7 @@ end
 w = zeros(Nx*Ny,1);
 
 %% Plotwahl
-% pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert\n")
+pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert\n")
 %% Zeitschleife
 for t = 0:dt:20
     w = ~R.*w;
@@ -144,36 +144,33 @@ for t = 0:dt:20
     colormap jet
     shading interp
     
-%     while pruef3 == true
-%         if pltw == 1
-%             imagesc(x_,y_,C')
-%             hold on
-%             pruef3 = true;
-%         elseif pltw == 3
-%             s = pcolor(x_,y_,C')
-%             s.FaceColor = 'interp'
-%             s.EdgeColor = 'none'
-%             hold on
-%             pruef3 = true;
-%         elseif pltw == 3
-%             imagesc(x_,y_,W')
-%             hold on
-%             pruef3 = true;
-%         elseif pltw == 4
-%             s = pcolor(x_,y_,W')
-%             s.FaceColor = 'interp'
-%             s.EdgeColor = 'none'
-%             hold on
-%             pruef3 = true;
-%         else
-%             disp("Antwort ungültig")
-%             pruef3 = false;
-%         end
-%     end
-
-    s = pcolor(x_,y_,C')
-    s.FaceColor = 'interp'
-    s.EdgeColor = 'none'
+    while pruef3 == true
+        if pltw == 1
+            imagesc(x_,y_,C')
+            hold on
+            pruef3 = true;
+        elseif pltw == 3
+            s = pcolor(x_,y_,C')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = true;
+        elseif pltw == 3
+            imagesc(x_,y_,W')
+            hold on
+            pruef3 = true;
+        elseif pltw == 4
+            s = pcolor(x_,y_,W')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = true;
+        else
+            disp("Antwort ungültig")
+            pruef3 = false;
+        end
+    end
+    rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1],'Visible','off')
     hold on
     quiver(x,y,u,v,'w')
     hold on
@@ -195,7 +192,7 @@ for t = 0:dt:20
     hold off
 end
 %% Video
-vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+vidname = input("Unter welchem Namen soll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
 video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)

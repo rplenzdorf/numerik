@@ -88,7 +88,7 @@ w = -w/10;
 w = ~R.*w;
 
 %% Plotwahl
-% pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert?\n")
+pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert?\n")
 %% Zeitschleife
 for t = 0:dt:2
     w = ~R.*w;
@@ -148,38 +148,34 @@ for t = 0:dt:2
     colormap jet
     shading interp
     
-%     while pruef3 == true
-%         if pltw == 1
-%             imagesc(x_,y_,C')
-%             hold on
-%             pruef3 = false;
-%         elseif pltw == 2
-%             s = pcolor(x_,y_,C')
-%             s.FaceColor = 'interp'
-%             s.EdgeColor = 'none'
-%             hold on
-%             pruef3 = false;
-%         elseif pltw == 3
-%             imagesc(x_,y_,W')
-%             hold on
-%             pruef3 = false;
-%         elseif pltw == 4
-%             s = pcolor(x_,y_,W')
-%             s.FaceColor = 'interp'
-%             s.EdgeColor = 'none'
-%             hold on
-%             pruef3 = false;
-%         else
-%             disp("Antwort ungültig")
-%             pruef3 = true;
-%         end
-%     end
-    set(gca,'colorscale','log')
+    while pruef3 == true
+        if pltw == 1
+            imagesc(x_,y_,C')
+            hold on
+            pruef3 = false;
+        elseif pltw == 2
+            s = pcolor(x_,y_,C')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        elseif pltw == 3
+            imagesc(x_,y_,W')
+            hold on
+            pruef3 = false;
+        elseif pltw == 4
+            s = pcolor(x_,y_,W')
+            s.FaceColor = 'interp'
+            s.EdgeColor = 'none'
+            hold on
+            pruef3 = false;
+        else
+            disp("Antwort ungültig")
+            pruef3 = true;
+        end
+    end
 
-    s = pcolor(x_,y_,C')
-    s.FaceColor = 'interp'
-    s.EdgeColor = 'none'
-    
+%     set(gca,'colorscale','log')
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
     set(gca,'YDir','normal')
@@ -197,7 +193,7 @@ for t = 0:dt:2
     hold off
 end
 %% Video
-vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+vidname = input("Unter welchem Namen soll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
 video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)

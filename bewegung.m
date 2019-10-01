@@ -196,7 +196,7 @@ for t = 0:dt:4
             imagesc(x_,y_,C')
             hold on
             pruef3 = false;
-        elseif pltw == 3
+        elseif pltw == 2
             s = pcolor(x_,y_,C')
             s.FaceColor = 'interp'
             s.EdgeColor = 'none'
@@ -217,8 +217,7 @@ for t = 0:dt:4
             pruef3 = true;
         end
     end
-%     rec = rectangle('Position',[.5*5*t-0.2+.5 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1]);
-%     rec
+%     rectangle('Position',[.5*7*t-0.2+.5 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[0 0]);
 %     hold on
 %     quiver(x,y,u,v,'w')
 %     hold on
@@ -240,7 +239,7 @@ for t = 0:dt:4
     hold off
 end
 %% Video
-vidname = input("Unter welchem Namen sooll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
+vidname = input("Unter welchem Namen soll das Video gespeichert werden?(Vollständiger Dateipfad mögich)\n",'s')
 video = VideoWriter(vidname,'MPEG-4');
 open(video)
 writeVideo(video,F)
