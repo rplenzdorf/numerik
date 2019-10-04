@@ -143,33 +143,32 @@ for t = 0:dt:20
     %% Plot  
     colormap jet
     shading interp
-    
-    while pruef3 == true
-        if pltw == 1
-            imagesc(x_,y_,C')
-            hold on
-            pruef3 = true;
-        elseif pltw == 3
-            s = pcolor(x_,y_,C')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = true;
-        elseif pltw == 3
-            imagesc(x_,y_,W')
-            hold on
-            pruef3 = true;
-        elseif pltw == 4
-            s = pcolor(x_,y_,W')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = true;
-        else
-            disp("Antwort ungültig")
-            pruef3 = false;
-        end
+
+    if pltw == 1
+        imagesc(x_,y_,C')
+        hold on
+        pruef3 = true;
+    elseif pltw == 3
+        s = pcolor(x_,y_,C')
+        s.FaceColor = 'interp'
+        s.EdgeColor = 'none'
+        hold on
+        pruef3 = true;
+    elseif pltw == 3
+        imagesc(x_,y_,W')
+        hold on
+        pruef3 = true;
+    elseif pltw == 4
+        s = pcolor(x_,y_,W')
+        s.FaceColor = 'interp'
+        s.EdgeColor = 'none'
+        hold on
+        pruef3 = true;
+    else
+        disp("Antwort ungültig")
+        pruef3 = false;
     end
+    
     rectangle('Position',[.5-0.2 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[1 1],'Visible','off')
     hold on
     quiver(x,y,u,v,'w')

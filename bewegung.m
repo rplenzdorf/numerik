@@ -91,7 +91,7 @@ w = -w/10;
 w = ~R.*w;
 
 %% Objektwahl
-objw = input("welches Objekt soll umströmt werden?\n \n 1) Ruehrer \n 2) Rechteck mit Translation und Rotation (in Entwicklung)\n 3) eigenes Objekt\n")
+objw = input("welches Objekt soll umströmt werden?\n \n 1) Ruehrer \n 2) eigenes Objekt\n")
 
 %% Plotwahl
 pltw = input("Welche Groesse soll dargestellt werden?\n \n 1) Geschwindigkeit\n 2) Geschwindigkeit, interpoliert\n 3) Wirbelstärke\n 4) Wirbelstärke, interpoliert")
@@ -135,14 +135,6 @@ for t = 0:dt:4
             o1 = (x-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
             o2 = (y-ry)*cos(phi)-(x-rx)*sin(phi)+ry;
             obj = (o1-rx).^10+((o2-ry)/4).^10<.03.^10;
-            pruef2 = false;
-        elseif objw == 2
-            rx = .5;
-            ry = .5;
-            phi = 5*t;
-            o1 = (x*5*t-rx)*cos(phi)+(y-ry)*sin(phi)+rx;
-            o2 = (y-ry)*cos(phi)-(x*5*t-rx)*sin(phi)+ry;
-            obj = (o1-rx).^10+((o2-ry)).^10<.03.^10;
             pruef2 = false;
         elseif objw == 3
             obj = input("eigenes Objekt:\n")
@@ -217,8 +209,6 @@ for t = 0:dt:4
             pruef3 = true;
         end
     end
-%     rectangle('Position',[.5*7*t-0.2+.5 .5-0.2 .4 .4],'FaceColor',[.5 .5 .5],'Curvature',[0 0]);
-%     hold on
 %     quiver(x,y,u,v,'w')
 %     hold on
     title(['t:',num2str(t),' Re:',num2str(Re)])

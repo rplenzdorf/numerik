@@ -148,33 +148,30 @@ for t = 0:dt:2
     colormap jet
     shading interp
     
-    while pruef3 == true
-        if pltw == 1
-            imagesc(x_,y_,C')
-            hold on
-            pruef3 = false;
-        elseif pltw == 2
-            s = pcolor(x_,y_,C')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = false;
-        elseif pltw == 3
-            imagesc(x_,y_,W')
-            hold on
-            pruef3 = false;
-        elseif pltw == 4
-            s = pcolor(x_,y_,W')
-            s.FaceColor = 'interp'
-            s.EdgeColor = 'none'
-            hold on
-            pruef3 = false;
-        else
-            disp("Antwort ungültig")
-            pruef3 = true;
-        end
+    if pltw == 1
+        imagesc(x_,y_,C')
+        hold on
+        pruef3 = false;
+    elseif pltw == 2
+        s = pcolor(x_,y_,C')
+        s.FaceColor = 'interp'
+        s.EdgeColor = 'none'
+        hold on
+        pruef3 = false;
+    elseif pltw == 3
+        imagesc(x_,y_,W')
+        hold on
+        pruef3 = false;
+    elseif pltw == 4
+        s = pcolor(x_,y_,W')
+        s.FaceColor = 'interp'
+        s.EdgeColor = 'none'
+        hold on
+        pruef3 = false;
+    else
+        disp("Antwort ungültig")
+        pruef3 = true;
     end
-
 %     set(gca,'colorscale','log')
     title(['t:',num2str(t),' Re:',num2str(Re)])
     colorbar()
