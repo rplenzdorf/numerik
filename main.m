@@ -16,7 +16,7 @@ while pruef == true
     Re = input("bei welcher Reynoldszahl sol die Strömung simuliert werden? \n")
     Nx = input("wie groß soll die Auflösung in X-Richtung sein?\n")
     sv = input("welches Seitenverhältnis soll vorliegen(x:y)?\n")
-    a = input("Welche Strömung soll dargestellt werden?\n 1) Umströmtes Objekt\n 2) Lid driven cavitiy\n 3) Rohrstroemung\n 4) Bewegtes Objekt\n 9) beenden\n")
+    a = input("Welche Strömung soll dargestellt werden?\n 1) Umströmtes Objekt\n 2) Lid driven cavitiy\n 3) Rohrstroemung\n 4) Bewegtes Objekt\n 5) Wirbelverteilung\n 9) beenden\n")
     
     if a == 1
         umstroemung(sv,Nx,Re)
@@ -29,6 +29,9 @@ while pruef == true
         pruef = false;
     elseif a == 4
         bewegung(sv,Nx,Re)
+        pruef = false;
+    elseif a == 5
+        wirbelverteilung(sv,Nx,Re)
         pruef = false;
     elseif a == 9
         pruef = false;
